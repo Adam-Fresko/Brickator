@@ -16,7 +16,7 @@ android:
     - build-tools-22.0.1 
 
     # The SDK version used to compile your project
-    - android-24  # travis only handles api 24 atm
+    - android-22  # travis only handles api 24 atm
 
     # Additional components
     #- extra-google-google_play_services
