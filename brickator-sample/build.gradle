@@ -1,0 +1,123 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.deadswine.brickator.sample"
+        minSdkVersion 18
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            // to get the report we need to run ./gradlew createDebugCoverageReport
+            testCoverageEnabled = true
+        }
+    }
+
+    sourceSets {
+        // this is required to have tests compiled from different module
+        androidTest {
+
+            java.srcDirs += "../brickator-library/src/androidTest/java";
+        }
+        test {
+            java.srcDirs += "../brickator-library/src/test/java";
+        }
+    }
+
+}
+
+// ./gradlew clean --continue brickatorBuildCoverageReport brickatorUpdateCoverageReport // proper way to execute tasks
+task brickatorBuildCoverageReport {
+    doLast {
+        exec {
+            commandLine "${getRootDir()}/gradlew", "createDebugCoverageReport"
+        }
+    }
+}
+
+task brickatorPullScreenShotsAndRemove {
+    doLast {
+        exec {
+            File f = new File("${getBuildDir()}/reports/androidTests/connected/test-screenshots");
+            if (!f.exists()) {
+                f.mkdir();
+            } else {
+                //TODO if directory exists clear its content so we dont have old screen shots
+            }
+            commandLine "adb", "pull", "/storage/emulated/0/test-screenshots", "${getBuildDir()}/reports/androidTests/connected"
+        }
+
+        exec {
+            commandLine "adb", "shell", "rm", "-r", "/storage/emulated/0/test-screenshots"
+        }
+    }
+}
+
+task brickatorUpdateCoverageReport {
+    dependsOn brickatorPullScreenShotsAndRemove
+    doLast {
+        exec {
+            commandLine "${getRootDir()}/gradlew", "-p", "${getRootDir()}/brickator-library", "-PappBuildDirectory=${getBuildDir()}", "updateCoverageReport"
+        }
+    }
+}
+
+task brickatorCombinedTaskWitchWillNotProduceScreenShotsIfReportPartFails {
+    doLast {
+
+        exec {
+            commandLine "${getRootDir()}/gradlew", "createDebugCoverageReport"
+        }
+
+        exec {
+            File f = new File("${getBuildDir()}/reports/androidTests/connected/test-screenshots");
+            if (!f.exists()) {
+                f.mkdir();
+            } else {
+                //TODO if directory exists clear its content so we dont have old screen shots
+            }
+            commandLine "adb", "pull", "/storage/emulated/0/test-screenshots", "${getBuildDir()}/reports/androidTests/connected"
+        }
+
+        exec {
+            commandLine "adb", "shell", "rm", "-r", "/storage/sdcard/Pictures/test-screenshots"
+        }
+
+        exec {
+            commandLine "${getRootDir()}/gradlew", "-p", "${getRootDir()}/brickator-library", "-PappBuildDirectory=${getBuildDir()}", "updateCoverageReport"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestCompile project(':brickator-library')
+    androidTestCompile 'com.android.support:support-annotations:25.0.1'
+
+    testCompile 'junit:junit:4.12'
+
+    compile project(':brickator-library')
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+
+}

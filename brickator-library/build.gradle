@@ -1,0 +1,417 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+    }
+
+}
+
+public class ScreenShotFile {
+    String mFilePath;
+    String mClass;
+    String mTest;
+    int id;
+    String mName;
+
+
+    public boolean parseScreenshotFileName(String ssFileName) {
+        mFilePath = ssFileName;
+        String[] splitedString = ssFileName.split("@");
+        mClass = splitedString[0];
+        mTest = splitedString[1];
+        id = Integer.parseInt(splitedString[2]);
+        mName = splitedString[3];
+
+        return true;
+    }
+
+    public void printFields() {
+        println("mFilePath: " + mFilePath);
+        println("mClass: " + mClass);
+        println("mTest: " + mTest);
+        println("id: " + id);
+        println("mName: " + mName);
+    }
+}
+
+public class WebPageUpdater {
+    private File webPagesDirectory;
+    private File generatedScreenSHotsPagesDirectory;
+
+    WebPageUpdater(File webPagesDirectory, File generatedScreenSHotsPagesDirectory) {
+        this.webPagesDirectory = webPagesDirectory;
+        this.generatedScreenSHotsPagesDirectory = generatedScreenSHotsPagesDirectory;
+    }
+
+    public boolean updateTestPages(java.util.HashMap<String, List<ScreenShotFile>> hashMap) {
+        Set keys = hashMap.keySet();
+        File[] files = webPagesDirectory.listFiles();
+
+        for (Iterator i = keys.iterator(); i.hasNext();) {
+            String key = (String) i.next();
+
+            for (int j = 0; j < files.length; j++) {
+                if (files[j].getAbsolutePath().contains(hashMap.get(key).get(0).getmClass())) {
+                    updatePage(new File(files[j].getAbsolutePath()), hashMap.get(key).get(0).getmClass(), hashMap.get(key).size());
+                    break;
+                }
+            }
+
+
+        }
+        return true;
+    }
+
+    private boolean updatePage(File f, String testClassName, int amoutOfScreenSHots) {
+        String link;
+        File[] ssFiles = generatedScreenSHotsPagesDirectory.listFiles();
+        for (int j = 0; j < ssFiles.length; j++) {
+            if (ssFiles[j].absolutePath.contains(testClassName)) {
+                link = ssFiles[j].getAbsolutePath();
+                break;
+            }
+        }
+
+        List<String> lines = f.readLines()
+
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line.contains('<div class="infoBox" id="duration">')) {
+
+                String html = "<td> <div class=\"infoBox\" id=\"screenshots\">  <div class=\"counter\">" +
+                        amoutOfScreenSHots + "</div>   <a href=\"" +
+                        link + "\"> <p>screenshots</p></a>   </div>  </td>";
+
+                lines.add(i + 4, html)
+
+                break;
+            }
+        }
+
+        f.withWriter('UTF-8') { writer ->
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+
+
+            }
+        }
+
+
+        return true;
+    }
+}
+
+public class WebPageGenerator {
+
+    private File buildDirectory;
+    private File ssDirectory;
+    private File cssDirectory;
+    private File generatedPagesDirectory;
+    private File pagesRootDirectory;
+
+
+    WebPageGenerator(File buildDirectory, File ssDirectory, File cssDirectory, File generatedPagesDirectory, File pagesRootDirectory) {
+        this.buildDirectory = buildDirectory;
+        this.ssDirectory = ssDirectory;
+        this.cssDirectory = cssDirectory;
+        this.generatedPagesDirectory = generatedPagesDirectory;
+        this.pagesRootDirectory = pagesRootDirectory;
+    }
+
+    public boolean generatePage(java.util.HashMap<String, ScreenShotFile> hashMap, String screenShotFileName) {
+        generateCssUpdate(new File(cssDirectory.getAbsolutePath() + "/style.css"));
+
+        File f = new File(generatedPagesDirectory.getAbsolutePath() + "/" + screenShotFileName + ".html");
+        generateHeader(f);
+
+        List<String> lines = f.readLines();
+        String parentFilePath = findPathToParentFile(screenShotFileName);
+        String breadcrumbs = "<div class=\"breadcrumbs\"><a href=\"" + parentFilePath + "\">" + screenShotFileName + "</a> &gt;Screen Shots</div>"
+        lines.add(breadcrumbs)
+
+        lines.add("<h1>Screen shots for Class " + screenShotFileName + "</h1>")
+
+        f.withWriter('UTF-8') { writer ->
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+            }
+
+        }
+
+        generateInfoBoxWithSs(f, hashMap, screenShotFileName);
+        generateFooter(f);
+        return true;
+    }
+
+    private String findPathToParentFile(String fileName) {
+        File[] files = pagesRootDirectory.listFiles();
+
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].getName().contains(fileName)) {
+                return files[i].getAbsolutePath();
+
+            }
+        }
+
+    }
+
+    private void generateCssUpdate(File f) {
+        List<String> lines = f.readLines();
+        lines.add(".deadswineImage {max-width:50%; max-height: 500px;}")
+        lines.add(".deadswineInfoBox {display: inline-block; padding-top: 15px; padding-bottom: 15px;text-align: center; }")
+        f.withWriter('UTF-8') { writer ->
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+            }
+        }
+
+    }
+
+    private void generateInfoBoxWithSs(File f, java.util.HashMap<String, List<ScreenShotFile>> hashMap, String screenShotFileName) {
+
+        List<ScreenShotFile> listOfScreenShots = hashMap.get(screenShotFileName);
+
+        // group screenshots by individual test methods
+        java.util.HashMap<String, List<ScreenShotFile>> groupedHashMap = new HashMap<>();
+
+        for (int i = 0; i < listOfScreenShots.size(); i++) {
+            if (groupedHashMap.containsKey(listOfScreenShots.get(i).mTest)) {
+                groupedHashMap.get(listOfScreenShots.get(i).getmTest()).add(listOfScreenShots.get(i));
+            } else {
+                List<ScreenShotFile> ssList = new ArrayList<>();
+                ssList.add(listOfScreenShots.get(i));
+
+                groupedHashMap.put(listOfScreenShots.get(i).getmTest(), ssList);
+            }
+        }
+
+        List<String> lines = f.readLines();
+
+        Set keys = groupedHashMap.keySet();
+        for (Iterator i = keys.iterator(); i.hasNext();) {
+            String key = (String) i.next();
+
+            listOfScreenShots = groupedHashMap.get(key);
+
+            lines.add("<br>")
+            lines.add("<h1>Test: " + listOfScreenShots.get(0).getmTest() + "</h1>")
+            lines.add("<br>")
+
+            lines.add("<div class=\"summaryGroup\">")
+
+            lines.add("<table>")
+            lines.add("<tr>")
+
+            int tmp = 0;
+
+            for (int j = 0; j < listOfScreenShots.size(); j++) {
+                tmp++;
+                if (tmp > 5) {
+                    tmp = 0;
+                    lines.add("</tr>")
+                    lines.add("<tr>")
+                }
+
+                lines.add("<td>") // start
+                lines.add("<div class=\"deadswineInfoBox\"  id=\"tests\">")
+
+                String link = ssDirectory.getAbsolutePath().toString() + "/" + listOfScreenShots.get(j).getmFilePath();
+
+                lines.add("<p><a href=\"" + link + "\" target=\"_blank\"><img class=\"deadswineImage\" src=\"" + link + "\" ></a></p>")
+                lines.add("<p>" + listOfScreenShots.get(j).getmName() + "</p>")
+                lines.add("<p>" + listOfScreenShots.get(j).getId() + "</p>")
+                lines.add("</div>")
+                lines.add("</td>") // end
+            }
+
+            lines.add("</tr>")
+            lines.add("</table>")
+            lines.add("</div>")
+        }
+
+
+
+        f.withWriter('UTF-8') { writer ->
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+            }
+        }
+    }
+
+    private void generateHeader(File f) {
+        List<String> lines = new ArrayList<>();
+        lines.add("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">")
+        lines.add("<html>")
+        lines.add("<head>")
+        lines.add("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>")
+        lines.add("<link href=\"../css/base-style.css\" rel=\"stylesheet\" type=\"text/css\"/>")
+        lines.add("<link href=\"../css/style.css\" rel=\"stylesheet\" type=\"text/css\"/>")
+        lines.add("<script src=\"../js/report.js\" type=\"text/javascript\"></script>")
+
+        lines.add("</head>")
+        lines.add("<body>")
+        lines.add("<div id=\"content\">")
+
+        f.withWriter('UTF-8') { writer ->
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+            }
+        }
+
+    }
+
+    private void generateFooter(File f) {
+        List<String> lines = f.readLines();
+        lines.add("<div id=\"footer\">")
+        lines.add("<p>")
+        lines.add("<a href=\"https://github.com/Adam-Fresko/Android-Fast-Ui\">Generated by Android Fast Ui Automator</a></p>")
+        lines.add("</div>")
+        lines.add("</div>")
+        lines.add("</body>")
+
+        f.withWriter('UTF-8') { writer ->
+
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                writer.write(line)
+
+            }
+
+        }
+
+    }
+}
+
+task updateCoverageReport << {
+
+    println "============================="
+    println "updateCoverageReport - START"
+    println appBuildDirectory
+    String screenShotsDirectory = appBuildDirectory + "/reports/androidTests/connected/test-screenshots"
+    String generatedPagesDirectory = appBuildDirectory + "/reports/androidTests/connected/test-screenshots-pages"
+    String appCoverageIndexFile = appBuildDirectory + "/reports/androidTests/connected/index.html"
+    String webPageDirectory = appBuildDirectory + "/reports/androidTests/connected/"
+    String cssDirectoryString = appBuildDirectory + "/reports/androidTests/connected/css"
+    println appCoverageIndexFile
+
+    // ensure that all directories exist
+    File buildDirectory = new File(appBuildDirectory)
+    if (buildDirectory.exists()) {//}  && f.isDirectory()){
+        println '${buildDir}/  EXISTS'
+    } else {
+        println 'The test output directory dont exists'
+        throw new Error("Provided test directory dont exists")
+        return
+    }
+
+    File webPageFile = new File(webPageDirectory)
+    if (webPageFile.exists()) {//}  && f.isDirectory()){
+        println 'webPageDirectory  EXISTS'
+    } else {
+        println 'The test webPageDirectory  dont exists'
+        throw new Error("Provided test webPageDirectory  dont exists")
+        return
+    }
+
+    File ssDirectory = new File(screenShotsDirectory)
+    if (ssDirectory.exists()) {//}  && f.isDirectory()){
+        println 'screenShotsDirectory  EXISTS'
+    } else {
+        println 'screenShotsDirectory  DONT EXISTS - generating'
+        ssDirectory.mkdir()
+    }
+
+    File cssDirectory = new File(cssDirectoryString)
+    if (cssDirectory.exists()) {//}  && f.isDirectory()){
+        println 'cssDirectory  EXISTS'
+    } else {
+        println 'cssDirectory  DONT EXISTS - generating'
+
+    }
+
+    File generatedPageDirectory = new File(generatedPagesDirectory)
+    if (generatedPageDirectory.exists()) {//}  && f.isDirectory()){
+        println 'generatedPagesDirectory  EXISTS'
+    } else {
+        println 'generatedPagesDirectory  DONT EXISTS - generating'
+        generatedPageDirectory.mkdir()
+    }
+
+    WebPageGenerator webPageGenerator = new WebPageGenerator(buildDirectory, ssDirectory, cssDirectory, generatedPageDirectory, webPageFile);
+
+    java.util.HashMap<String, List<ScreenShotFile>> hashMap = new HashMap<>();
+    // # Group screen shots by class and testMethod
+
+    File[] ssFiles = ssDirectory.listFiles();
+
+    for (int i = 0; i < ssFiles.length; i++) {
+
+        ScreenShotFile ss = new ScreenShotFile();
+        ss.parseScreenshotFileName(ssFiles[i].getName());
+
+        if (hashMap.containsKey(ss.getmClass())) {
+            hashMap.get(ss.getmClass()).add(ss);
+        } else {
+            List<ScreenShotFile> ssList = new ArrayList<>();
+            ssList.add(ss)
+
+            hashMap.put(ss.getmClass(), ssList);
+        }
+
+    }
+
+    // for each key generate page with screenshots
+    Set keys = hashMap.keySet();
+    for (Iterator i = keys.iterator(); i.hasNext();) {
+        String key = (String) i.next();
+        webPageGenerator.generatePage(hashMap, key);
+    }
+
+    WebPageUpdater webPageUpdater = new WebPageUpdater(new File(webPageDirectory), generatedPageDirectory);
+    webPageUpdater.updateTestPages(hashMap);
+
+    println("==================")
+    println("file://" + appCoverageIndexFile);
+    println("==================")
+}
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+}

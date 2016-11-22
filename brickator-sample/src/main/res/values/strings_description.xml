@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_menu">Main Menu</string>
+    <string name="fragment_main">Fragment Main</string>
+    <string name="fragment_gallery">Fragment Gallery</string>
+</resources>
