@@ -1,6 +1,6 @@
 language: android
-
-install: true
+jdk: oraclejdk7
+#install: true
 
 script:
 - ./gradlew clean --continue brickatorBuildCoverageReport brickatorUpdateCoverageReport
