@@ -12,7 +12,8 @@ android:
 jdk:
   - oraclejdk8
 script:
-  - ./gradlew clean build
+  #- ./gradlew clean build # this one is working
+  ./gradlew clean --continue brickatorBuildCoverageReport brickatorUpdateCoverageReport
 before_script:
 
     - wget http://services.gradle.org/distributions/gradle-2.14.1-bin.zip
