@@ -1,2 +1,2 @@
-include  ':brickator-sample' //':brickator-library',
+include  ':brickator-sample',':brickator-library'
 
