@@ -12,7 +12,7 @@ android:
 jdk:
   - oraclejdk8
 script:
-  - ./gradlew test
+  - ./gradlew clean build
 before_script:
 
     - wget http://services.gradle.org/distributions/gradle-2.14.1-bin.zip
