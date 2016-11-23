@@ -2,15 +2,9 @@ language: android
 
 #install: true
 
-before_script:
-    - wget http://services.gradle.org/distributions/gradle-2.14.1-bin.zip
-    - unzip gradle-2.14.1-bin.zip
-    - export GRADLE_HOME=$PWD/gradle-2.14.1
-    - export PATH=$GRADLE_HOME/bin:$PATH
 
 script:
 - ./gradlew clean #--continue brickatorBuildCoverageReport brickatorUpdateCoverageReport
-
 android:
   components:
     # Uncomment the lines below if you want to
@@ -34,5 +28,10 @@ android:
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-22
     - sys-img-x86-android-22
-    
+before_script:
+    - wget http://services.gradle.org/distributions/gradle-2.14.1-bin.zip
+    - unzip gradle-2.14.1-bin.zip
+    - export GRADLE_HOME=$PWD/gradle-2.14.1
+    - export PATH=$GRADLE_HOME/bin:$PATH
+
     
