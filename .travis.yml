@@ -38,3 +38,7 @@ before_script:
 cache:
     directories:
       - $HOME/.gradle/caches/
+licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
