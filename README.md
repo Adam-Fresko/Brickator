@@ -12,7 +12,7 @@ Here is example of brickator at work <br>
 
 | Video  |    coverage report      | screenshots in coverage report |
 |----------|:-------------:|------:|
-| <a href="http://www.youtube.com/watch?feature=player_embedded&v=iPbzTZrDuDE&feature=youtu.be" target="_blank"><img src="http://img.youtube.com/vi/iPbzTZrDuDE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a> | <img src="https://github.com/Adam-Fresko/brickator/brickator-sample/src/main/res/drawable/ss_1.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> | <img src="https://github.com/Adam-Fresko/brickator/brickator-sample/src/main/res/drawable/ss_2.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> |
+| <a href="http://www.youtube.com/watch?feature=player_embedded&v=iPbzTZrDuDE&feature=youtu.be" target="_blank"><img src="http://img.youtube.com/vi/iPbzTZrDuDE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a> | <img src="https://github.com/Adam-Fresko/brickator/blob/develop/brickator-sample/src/main/res/drawable/ss_1.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> | <img src="https://github.com/Adam-Fresko/brickator/blob/develop/brickator-sample/src/main/res/drawable/ss_2.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> |
 
 
 
