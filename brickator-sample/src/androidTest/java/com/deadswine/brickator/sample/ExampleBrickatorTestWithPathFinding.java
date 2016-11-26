@@ -43,12 +43,11 @@ public class ExampleBrickatorTestWithPathFinding extends BrickatorBaseTest {
 
     @Before
     public void beforeTest() {
-        Context appContext = InstrumentationRegistry.getTargetContext();
+
 
         // initialize automator here
         // #1 initialize
         Brickator.print("STAGE 1111111111");
-        Brickator.print("app package is: " + appContext.getApplicationContext().getPackageName());
         Brickator.getInstance().initialize("com.deadswine.brickator.sample", new Resolver());
 
         // #2 register states clasess
@@ -60,27 +59,14 @@ public class ExampleBrickatorTestWithPathFinding extends BrickatorBaseTest {
         Brickator.getInstance().registerState(MainMenuState.class);
         Brickator.getInstance().registerState(GalleryState.class);
 
+
+
         SystemClock.sleep(5000);
         Brickator.print("STAGE 3333333333");
+
         // #3 grant permission for screenshots
+        PermissionState.checkScreenShotsPermission();
 
-        int permission = ContextCompat.checkSelfPermission(appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission == PackageManager.PERMISSION_DENIED) {
-            Brickator.getInstance().goToStateSimple(PermissionState.class);
-
-            UiObject allowButton = PermissionState.getAllowButton();
-
-            try {
-                allowButton.click();
-            } catch (UiObjectNotFoundException e) {
-                throw new UnknownError("Allow button for storage permission don't exists");
-            }
-
-        }
-        SystemClock.sleep(100);
-
-        permission = ContextCompat.checkSelfPermission(appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        assertEquals(PackageManager.PERMISSION_GRANTED, permission);
 
         super.beforeTest(); // call super method so we have screenshot in before automatically or handle it yourself
     }
