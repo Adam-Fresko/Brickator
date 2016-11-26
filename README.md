@@ -12,7 +12,7 @@ Here is example of brickator at work <br>
 
 | Video  |    coverage report      | screenshots in coverage report |
 |----------|:-------------:|------:|
-| <a href="http://www.youtube.com/watch?feature=player_embedded&v=iPbzTZrDuDE&feature=youtu.be" target="_blank"><img src="http://img.youtube.com/vi/iPbzTZrDuDE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a> | <img src="https://github.com/Adam-Fresko/brickator/blob/develop/brickator-sample/src/main/res/drawable/ss_1.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> | <img src="https://github.com/Adam-Fresko/brickator/blob/develop/brickator-sample/src/main/res/drawable/ss_2.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> |
+| <a href="http://www.youtube.com/watch?feature=player_embedded&v=iPbzTZrDuDE&feature=youtu.be" target="_blank"><img src="http://img.youtube.com/vi/iPbzTZrDuDE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a> | <img src="https://github.com/Adam-Fresko/brickator/develop/brickator-sample/src/main/res/drawable/ss_1.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> | <img src="https://github.com/Adam-Fresko/brickator/develop/brickator-sample/src/main/res/drawable/ss_2.png?raw=true" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /> |
 
 
 
@@ -31,7 +31,7 @@ Yes! Pull requests are welcome as well as adding issues
 #How do i start?
 
 ### #0 Check sample application
-[Sample](../blob/master/brickator-sample)
+[Sample](../master/brickator-sample)
 
 ### #1 Add library as module
 
@@ -44,8 +44,8 @@ compile project(':brickator-library') // required for asking for storager permis
 ```
 
 ### #3 Create States
-Under src/androidTest/java create class called BackgroundState that is extending BrickatorState
-More states can be found here [here](../blob/master/brickator-sample/src/androidTest/java/com/deadswine/brickator/sample/states/)
+Under src/androidTest/java create class called BackgroundState that is extending BrickatorState <br>
+More states can be found here [here](../master/brickator-sample/src/androidTest/java/com/deadswine/brickator/sample/states/)
 
 ```Java
 public class BackgroundState extends BrickatorState {
@@ -83,7 +83,7 @@ public void goToMainState() {
 
 ### #4 Create your implementation of state resolver
 This class will be used to resolve what state we are in.
-Under src/androidTest/java create class called Resolver that is extending [StateResolver](../blob/master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/StateResolver.java). 
+Under src/androidTest/java create class called Resolver that is extending [StateResolver](../master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/StateResolver.java). 
 ```Java
 @Override
 public class Resolver extends StateResolver {
@@ -105,8 +105,8 @@ public class Resolver extends StateResolver {
 ```
 
 ### #5 Create test
-Under src/androidTest/java create test class that is extending [BrickatorBaseTest](../blob/master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/BrickatorBaseTest.java). 
-Note! You don't need to use BrickatorBaseTest but it makes your life easier with screenshots. See [BrickatorBaseTest](../blob/master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/BrickatorBaseTest.java) to learn how to handle that yourself 
+Under src/androidTest/java create test class that is extending [BrickatorBaseTest](../master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/BrickatorBaseTest.java). 
+Note! You don't need to use BrickatorBaseTest but it makes your life easier with screenshots. See [BrickatorBaseTest](../master/brickator-library/src/androidTest/java/com/deadswine/brickator/library/BrickatorBaseTest.java) to learn how to handle that yourself 
 
 ```Java
 @RunWith(AndroidJUnit4.class)
