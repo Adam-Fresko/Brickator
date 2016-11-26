@@ -70,24 +70,9 @@ public class ExampleBrickatorTestBasic {
 
         SystemClock.sleep(500);
         Brickator.print("STAGE 3333333333");
+
         // #3 grant permission for screenshots
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        int permission = ContextCompat.checkSelfPermission(appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission == PackageManager.PERMISSION_DENIED) {
-            Brickator.getInstance().goToStateSimple(PermissionState.class);
-
-            UiObject allowButton = PermissionState.getAllowButton();
-
-            try {
-                allowButton.click();
-            } catch (UiObjectNotFoundException e) {
-                throw new UnknownError("Allow button for storage permission don't exists");
-            }
-
-        }
-        SystemClock.sleep(100);
-        permission = ContextCompat.checkSelfPermission(appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        assertEquals(PackageManager.PERMISSION_GRANTED, permission);
+        PermissionState.checkScreenShotsPermission();
 
         Brickator.getInstance().takeScreenShot("BeforeTest");
     }
